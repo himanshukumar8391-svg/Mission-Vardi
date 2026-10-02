@@ -9,191 +9,136 @@ class MissionVardiApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MISSION VARDI',
-      theme: ThemeData(primarySwatch: Colors.orange),
-      home: const MainTabScreen(),
+      theme: ThemeData(primarySwatch: Colors.orange, scaffoldBackgroundColor: const Color(0xFFF8F8F8)),
+      home: const HomeScreen(),
     );
   }
 }
 
 class Question {
-  final String q;
-  final List<String> options;
-  final int ans;
-  Question(this.q, this.options, this.ans);
+  final String q; final List<String> o; final int ans;
+  Question(this.q, this.o, this.ans);
 }
 
-class MainTabScreen extends StatefulWidget {
-  const MainTabScreen({super.key});
-  @override
-  State<MainTabScreen> createState() => _MainTabScreenState();
-}
+// DATA FOR ALL SUBJECTS
+final Map<String, List<Question>> qb = {
+  "Maths": [Question("20% of 150?", ["30","40","20","50"], 0), Question("15x12=?", ["180","150","200","170"], 0), Question("Average 10,20,30?", ["15","20","25","30"], 1), Question("√64=?", ["6","8","9","7"], 1), Question("2+2*2=?", ["6","8","4","10"], 0)],
+  "Reasoning": [Question("Odd: 2,4,6,7?", ["7","2","4","6"], 0), Question("Series 2,4,8,16,?", ["32","24","30","18"], 0), Question("A north, right east?", ["East","West","North","South"], 0), Question("CAT=3, DOG=3, MAN=?", ["3","2","4","5"], 0), Question("Mirror 12:15?", ["11:45","12:15","9:45","10:15"], 0)],
+  "Hindi": [Question("'Veer' ka vilom?", ["Kayar","Bahadur","Nidar","Balwan"], 0), Question("Varn kitne?", ["52","44","50","48"], 0), Question("'Phool' paryay?", ["Pushp","Ped","Paudha","Patthar"], 0), Question("'Imandari' shabd?", ["Bhavvachak","Jativachak","Vyakti","Sarvnam"], 0), Question("Vachan ke bhed?", ["2","3","4","5"], 0)],
+  "GK": [Question("Army Day?", ["15 Jan","26 Jan","15 Aug","8 Oct"], 0), Question("Kargil War?", ["1999","1971","1965","2001"], 0), Question("National Animal?", ["Tiger","Lion","Elephant","Peacock"], 0), Question("Taj Mahal?", ["Agra","Delhi","Jaipur","Lucknow"], 0), Question("First PM?", ["Nehru","Modi","Gandhi","Patel"], 0)],
+  "GS": [Question("H2O?", ["Pani","Namak","Chini","O2"], 0), Question("Heart chambers?", ["4","2","3","5"], 0), Question("Light speed?", ["3 lakh km/s","1 lakh","5 lakh","2 lakh"], 0), Question("Gravity?", ["Newton","Einstein","Galileo","Tesla"], 0), Question("Vitamin C kami?", ["Scurvy","Rickets","Night blindness","Anemia"], 0)],
+  "Mock Test": [Question("Mock Q1: 10+20=?", ["30","20","10","40"], 0), Question("Mock Q2: UP Police 2024?", ["GK","GS","Both","None"], 2)],
+  "PYQ": [Question("PYQ 2024:...?", ["A","B","C","D"], 0)],
+  "Current Affairs": [Question("Current 2025 PM?", ["Modi","Rahul","Yogi","None"], 0)],
+};
 
-class _MainTabScreenState extends State<MainTabScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 5, vsync: this);
-  }
-
-  // --- QUESTIONS DATA ---
-  final Map<String, List<Question>> allQuestions = {
-    "Maths": [
-      Question("10, 20, 30 ka Average?", ["15", "20", "25", "30"], 1),
-      Question("2+2*2 =?", ["8", "6", "4", "10"], 1),
-      Question("100 ka 20%?", ["20", "30", "10", "25"], 0),
-      Question("15x12 =?", ["180", "150", "170", "200"], 0),
-      Question("√64 =?", ["6", "7", "8", "9"], 2),
-      Question("5% of 200?", ["5", "10", "20", "15"], 1),
-      Question("1 KM =? Meter", ["100", "1000", "10000", "10"], 1),
-      Question("2^3 =?", ["6", "8", "9", "10"], 1),
-      Question("SP=120, Profit 20%, CP?", ["100", "110", "90", "80"], 0),
-      Question("A alone 10 days, B 15 days, Together?", ["6 days", "5 days", "8 days", "7 days"], 0),
-    ],
-    "Reasoning": [
-      Question("A, B, C me B bich me hai, to?", ["A-B-C", "B-A-C", "C-B-A", "A-C-B"], 0),
-      Question("Odd one: 2,4,6,7?", ["2", "4", "6", "7"], 3),
-      Question("If CAT=3, DOG=3, ELEPHANT=?", ["8", "3", "5", "6"], 0),
-      Question("Mirror of 12:15?", ["11:45", "12:15", "9:45", "10:15"], 0),
-      Question("A north, right east, now?", ["East", "West", "North", "South"], 0),
-      Question("Series: 2,4,8,16,?", ["24", "32", "30", "20"], 1),
-      Question("P father of Q, Q is?", ["Son", "Daughter", "Can't say", "None"], 2),
-      Question("Blood Relation: My mother son?", ["Brother", "Sister", "Me", "Father"], 0),
-      Question("Coding: A=1, B=2, C=?", ["3", "4", "5", "2"], 0),
-      Question("If today Monday, after 61 days?", ["Saturday", "Sunday", "Monday", "Tuesday"], 0),
-    ],
-    "GK": [
-      Question("Bharat ka Rashtriya Geet?", ["Jana Gana Mana", "Vande Mataram", "Both", "None"], 1),
-      Question("India ki Rajdhani?", ["Mumbai", "Delhi", "Kolkata", "Chennai"], 1),
-      Question("Taj Mahal kahan hai?", ["Agra", "Delhi", "Jaipur", "Lucknow"], 0),
-      Question("ISRO ka full form?", ["Indian Space...", "International...", "India Science...", "None"], 0),
-      Question("Gandhi Jayanti?", ["2 Oct", "15 Aug", "26 Jan", "5 Sep"], 0),
-      Question("National Animal?", ["Lion", "Tiger", "Elephant", "Peacock"], 1),
-      Question("First PM of India?", ["Modi", "Nehru", "Gandhi", "Patel"], 1),
-      Question("Yoga Day?", ["21 June", "21 July", "21 May", "21 Aug"], 0),
-      Question("Kargil War year?", ["1999", "1971", "1965", "2001"], 0),
-      Question("Army Day?", ["15 Jan", "15 Aug", "26 Jan", "8 Oct"], 0),
-    ],
-    "GS": [
-      Question("Vitamin C kami se?", ["Scurvy", "Rickets", "Night blindness", "Anemia"], 0),
-      Question("Light ka speed?", ["3 lakh km/s", "1 lakh", "5 lakh", "2 lakh"], 0),
-      Question("Human heart kitne chamber?", ["2", "3", "4", "5"], 2),
-      Question("H2O kya hai?", ["Pani", "Namak", "Chini", "Oxygen"], 0),
-      Question("Gravity kisne khoji?", ["Newton", "Einstein", "Galileo", "Tesla"], 0),
-      Question("Computer ka dimag?", ["CPU", "RAM", "Mouse", "Keyboard"], 0),
-      Question("O2 kya hai?", ["Oxygen", "Hydrogen", "Carbon", "Nitrogen"], 0),
-      Question("Blood ka color lal kyon?", ["Hemoglobin", "Plasma", "Platelet", "None"], 0),
-      Question("Earth kitne din me Suraj ka chakkar?", ["365", "360", "366", "300"], 0),
-      Question("Sound sabse tez kisme?", ["Thos me", "Pani me", "Hawa me", "Vacuum me"], 0),
-    ],
-    "Hindi": [
-      Question("'Veer' ka vilom?", ["Kayar", "Bahadur", "Nidar", "Balwan"], 0),
-      Question("Ram ne Ravan ko mara - Kaal?", ["Bhootkaal", "Vartman", "Bhavishya", "None"], 0),
-      Question("Hindi varnmala me kitne varn?", ["52", "44", "50", "48"], 0),
-      Question("'Phool' ka paryayvachi?", ["Pushp", "Patthar", "Paudha", "Ped"], 0),
-      Question("Sangya ke kitne bhed?", ["5", "3", "4", "2"], 0),
-      Question("'Imandari' shabd?", ["Bhavvachak", "Jativachak", "Vyakti", "Sarvnam"], 0),
-      Question("Muhavara: 'Aankh ka Tara'?", ["Pyara", "Dushman", "Andha", "Gussa"], 0),
-      Question("Shuddh shabd?", ["Ujjwal", "Ujwal", "Ujjawal", "Ujaval"], 0),
-      Question("'Ganga' ka ling?", ["Stri", "Pulling", "Napunsak", "None"], 0),
-      Question("Vachan ke kitne bhed?", ["2", "3", "4", "5"], 0),
-    ],
-  };
-
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
   @override
   Widget build(BuildContext context) {
+    final List<Map<String,dynamic>> items = [
+      {"title":"Mock Test","sub":"150 Qs • Full Syllabus","icon":Icons.assignment,"color":Colors.orange,"count":150},
+      {"title":"PYQ 2019-2024","sub":"Previous Year Papers","icon":Icons.history_edu,"color":Colors.blue,"count":500},
+      {"title":"Maths","sub":"Arithmetic + Advance","icon":Icons.calculate,"color":Colors.green,"count":10},
+      {"title":"Reasoning","sub":"Logical + Verbal","icon":Icons.lightbulb,"color":Colors.purple,"count":10},
+      {"title":"Hindi","sub":"Vyakaran + Apathit","icon":Icons.menu_book,"color":Colors.red,"count":10},
+      {"title":"GK / GS","sub":"UP Special + Science","icon":Icons.public,"color":Colors.teal,"count":20},
+      {"title":"Current Affairs","sub":"Daily + Monthly PDF","icon":Icons.newspaper,"color":Colors.indigo,"count":10},
+      {"title":"Daily Live Quiz","sub":"8 PM - Rank + Prize","icon":Icons.live_tv,"color":Colors.pink,"count":10, "live":true},
+    ];
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: const Text('MISSION VARDI 🇮🇳', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.orange.shade800,
         foregroundColor: Colors.white,
-        centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
-          tabs: const [
-            Tab(text: "MATHS", icon: Icon(Icons.calculate)),
-            Tab(text: "REASONING", icon: Icon(Icons.lightbulb)),
-            Tab(text: "GK", icon: Icon(Icons.public)),
-            Tab(text: "GS", icon: Icon(Icons.science)),
-            Tab(text: "HINDI", icon: Icon(Icons.menu_book)),
-          ],
-        ),
+        elevation: 0,
+        title: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text("MISSION VARDI 🇮🇳", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          Text("UP Police • Agniveer • SSC GD", style: TextStyle(fontSize: 11))
+        ]),
+        actions: [IconButton(onPressed: (){}, icon: const Icon(Icons.notifications_none)), const CircleAvatar(radius: 16, backgroundColor: Colors.white, child: Text("H", style: TextStyle(color: Colors.orange))), const SizedBox(width: 10)],
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: allQuestions.keys.map((cat) => QuizTab(category: cat, questions: allQuestions[cat]!)).toList(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(12),
+        child: Column(children: [
+          Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.orange.shade800, borderRadius: BorderRadius.circular(16)), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text("Jai Hind! Aspirant 👋", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)), const SizedBox(height: 4), const Text("Aaj ka target pura karo", style: TextStyle(color: Colors.white70)), const SizedBox(height: 10), LinearProgressIndicator(value: 0.6, backgroundColor: Colors.white24, color: Colors.white, borderRadius: BorderRadius.circular(10))])), const SizedBox(width: 10), Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)), child: const Column(children: [Text("60%", style: TextStyle(fontWeight: FontWeight.bold)), Text("Done", style: TextStyle(fontSize: 10))]))])),
+          const SizedBox(height: 16),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.2),
+            itemCount: items.length,
+            itemBuilder: (context, i){
+              final it = items[i];
+              return GestureDetector(
+                onTap: (){
+                  String key = it['title'];
+                  if(key=="GK / GS") key="GK";
+                  if(key=="Mock Test" || key=="PYQ 2019-2024" || key=="Current Affairs" || key=="Daily Live Quiz") key="GK";
+                  // For demo, open quiz
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(category: it['title'], questions: qb[key]?? qb["GK"]!)));
+                },
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)]),
+                  padding: const EdgeInsets.all(14),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: (it['color'] as Color).withOpacity(0.15), borderRadius: BorderRadius.circular(10)), child: Icon(it['icon'], color: it['color'])),
+                      if(it['live']==true) Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(20)), child: const Text("LIVE", style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)))
+                    ]),
+                    const Spacer(),
+                    Text(it['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    const SizedBox(height: 2),
+                    Text(it['sub'], style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                    const SizedBox(height: 8),
+                    Text("${it['count']} Questions", style: TextStyle(fontSize: 11, color: it['color'], fontWeight: FontWeight.bold)),
+                  ]),
+                ),
+              );
+            },
+          )
+        ]),
       ),
+      bottomNavigationBar: BottomNavigationBar(type: BottomNavigationBarType.fixed, selectedItemColor: Colors.orange.shade800, items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+        BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: "Rank"),
+        BottomNavigationBarItem(icon: Icon(Icons.picture_as_pdf), label: "PDF"),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+      ]),
     );
   }
 }
 
-class QuizTab extends StatefulWidget {
-  final String category;
-  final List<Question> questions;
-  const QuizTab({super.key, required this.category, required this.questions});
-  @override
-  State<QuizTab> createState() => _QuizTabState();
+class QuizScreen extends StatefulWidget {
+  final String category; final List<Question> questions;
+  const QuizScreen({super.key, required this.category, required this.questions});
+  @override State<QuizScreen> createState() => _QuizScreenState();
 }
-
-class _QuizTabState extends State<QuizTab> {
-  int current = 0;
-  int score = 0;
-  bool answered = false;
-  int? selected;
-
-  void nextQ() {
-    if (current < widget.questions.length - 1) {
-      setState(() {current++; answered=false; selected=null;});
-    } else {
-      showDialog(context: context, builder: (_) => AlertDialog(
-        title: Text("${widget.category} Complete!"),
-        content: Text("Score: $score / ${widget.questions.length}\nJai Hind!"),
-        actions: [TextButton(onPressed: (){
-          Navigator.pop(context);
-          setState(() {current=0; score=0; answered=false; selected=null;});
-        }, child: const Text("RESTART"))],
-      ));
-    }
+class _QuizScreenState extends State<QuizScreen> {
+  int current=0, score=0; bool answered=false; int? selected;
+  void nextQ(){
+    if(current < widget.questions.length-1){ setState((){current++; answered=false; selected=null;});}
+    else{ showDialog(context: context, builder: (_)=> AlertDialog(title: Text("${widget.category} Complete!"), content: Text("Score: $score/${widget.questions.length}\nJai Hind!"), actions: [TextButton(onPressed: (){Navigator.pop(context); Navigator.pop(context);}, child: const Text("HOME"))]));}
   }
-
   @override
   Widget build(BuildContext context) {
     final q = widget.questions[current];
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("${widget.category} - Q ${current+1}/${widget.questions.length}", style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text("Score: $score", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green.shade700)),
-          ]),
-          const SizedBox(height: 10),
-          LinearProgressIndicator(value: (current+1)/widget.questions.length, color: Colors.orange),
-          const SizedBox(height: 20),
-          Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.orange.shade50, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.orange)), child: Text(q.q, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold))),
-          const SizedBox(height: 20),
-         ...List.generate(q.options.length, (i){
-            Color col = Colors.white;
-            if (answered) {
-              if (i==q.ans) col = Colors.green.shade200;
-              else if (i==selected && i!=q.ans) col = Colors.red.shade200;
-            }
-            return Container(margin: const EdgeInsets.only(bottom: 10), child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: col, foregroundColor: Colors.black, padding: const EdgeInsets.all(14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              onPressed: answered? null : (){ setState((){selected=i; answered=true;}); if(i==q.ans) score++; },
-              child: Text("${['A','B','C','D'][i]}. ${q.options[i]}", style: const TextStyle(fontSize: 16)),
-            ));
-          }),
-          const Spacer(),
-          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.all(16)), onPressed: answered? nextQ : null, child: Text(current==widget.questions.length-1? "FINISH" : "NEXT")),
-        ],
-      ),
+    return Scaffold(
+      appBar: AppBar(title: Text("${widget.category} - ${current+1}/${widget.questions.length}"), backgroundColor: Colors.orange.shade800, foregroundColor: Colors.white),
+      body: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        LinearProgressIndicator(value: (current+1)/widget.questions.length, color: Colors.orange),
+        const SizedBox(height: 20),
+        Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.orange.shade50, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.orange)), child: Text(q.q, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold))),
+        const SizedBox(height: 20),
+       ...List.generate(q.o.length, (i){
+          Color col = Colors.white;
+          if(answered){ if(i==q.ans) col=Colors.green.shade200; else if(i==selected && i!=q.ans) col=Colors.red.shade200;}
+          return Container(margin: const EdgeInsets.only(bottom: 10), child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: col, foregroundColor: Colors.black, padding: const EdgeInsets.all(14)), onPressed: answered? null : (){setState((){selected=i; answered=true;}); if(i==q.ans) score++;}, child: Text("${['A','B','C','D'][i]}. ${q.o[i]}")));
+        }),
+        const Spacer(),
+        ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade700, foregroundColor: Colors.white, padding: const EdgeInsets.all(16)), onPressed: answered? nextQ : null, child: Text(current==widget.questions.length-1? "FINISH":"NEXT")),
+      ])),
     );
   }
 }
