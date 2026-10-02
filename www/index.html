@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>UP Police Prep</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Roboto,Arial,sans-serif;background:#eef1f7;color:#1c2333}
+.hi{font-family:"Noto Sans Devanagari","Mangal","Nirmala UI",sans-serif;line-height:1.6}
+#app{max-width:600px;margin:auto;padding:14px}
+h1{margin:6px 0 2px;color:#14307a;font-size:24px}
+.sub{color:#667;margin:0 0 14px;font-size:14px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.bar button{width:auto;padding:8px 14px;background:#14307a}
+button{display:block;width:100%;border:0;border-radius:10px;padding:14px;font-size:16px;text-align:left;margin-top:8px;background:#fff;color:#1c2333;box-shadow:0 1px 3px #0002}
+button:disabled{opacity:.45}
+.pri{background:#14307a;color:#fff;text-align:center}
+.card{background:#fff;border-radius:10px;padding:14px;margin-top:8px;box-shadow:0 1px 3px #0002}
+.q{font-size:19px}
+.opt{font-size:18px}
+.ok{background:#c9f0d2!important;outline:2px solid #2a9d4a}
+.no{background:#ffd3d3!important;outline:2px solid #d33}
+.n{float:right;color:#667;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid button{text-align:center}
+.pg{color:#667;margin:4px 0}
+.big{font-size:48px;text-align:center;color:#14307a;margin:10px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="questions.js"></script>
+<script>
+const SUBJ={
+ hindi:{n:"General Hindi",t:["Sandhi","Samas","Synonyms","Antonyms","One-word Substitution","Idioms & Proverbs","Error Detection","Karak"]},
+ gk:{n:"General Knowledge",t:["History","Geography","Polity","Science","UP GK","Current Affairs","Economy","Sports"]},
+ math:{n:"Numerical Ability",t:["Percentage","Profit & Loss","Interest","Average","Ratio","LCM-HCF","Speed-Distance","Mensuration","Time & Work"]},
+ reason:{n:"Reasoning",t:["Series","Coding-Decoding","Direction","Blood Relations","Odd One Out","Clock & Calendar","Venn Diagram"]}
+};
+const YEARS=[2025,2024,2023,2022,2021,2020,2019,2018,2017,2016];
+const $=id=>document.getElementById(id);
+const go=h=>{$("app").innerHTML=h};
+let S={},timer=null;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+const best=t=>localStorage.getItem("best_"+t);
+
+function home(){
+ clearInterval(timer);
+ go(`<h1>UP Police Prep</h1><p class="sub">Constable exam practice - ${Q.length} questions loaded</p>
+ ${Object.keys(SUBJ).map(k=>`<button onclick="subj('${k}')"><b>${SUBJ[k].n}</b><span class="n">${Q.filter(q=>q.s==k).length} Qs</span></button>`).join("")}
+ <button class="pri" onclick="pyq()">Previous Year Papers</button>
+ <button class="pri" onclick="mock()">Full Mock Test (Timed)</button>`);
+}
+function subj(k){
+ const s=SUBJ[k];
+ go(`<div class="bar"><button onclick="home()">Back</button><b>${s.n}</b></div>
+ <p class="sub">Syllabus topics</p>
+ <button class="pri" onclick="startList('${k}')">All topics - ${Q.filter(q=>q.s==k).length} Qs</button>
+ ${s.t.map(t=>{const c=Q.filter(q=>q.s==k&&q.t==t).length;
+  return `<button ${c?"":"disabled"} onclick="startList('${k}','${t}')">${t}<span class="n">${c} Qs${best(s.n+t)?" | best "+best(s.n+t):""}</span></button>`}).join("")}`);
+}
+function startList(k,t){
+ const l=Q.filter(q=>q.s==k&&(!t||q.t==t));
+ if(!l.length)return alert("No questions yet");
+ begin(l,SUBJ[k].n+(t||""),0);
+}
+function pyq(){
+ go(`<div class="bar"><button onclick="home()">Back</button><b>Previous Year Papers</b></div>
+ <p class="sub">Tag questions with year (y:2023) in questions.js to fill these</p>
+ <div class="grid">${YEARS.map(y=>{const c=Q.filter(q=>q.y==y).length;
+  return `<button ${c?"":"disabled"} onclick="begin(Q.filter(q=>q.y==${y}),'PYQ ${y}',0)">${y}<br><small>${c} Qs</small></button>`}).join("")}</div>`);
+}
+function mock(){begin(Q.slice(),"Mock Test",Q.length*60)}
+function begin(list,title,t){
+ clearInterval(timer);
+ S={list:shuffle(list.slice()),i:0,sc:0,wrong:[],title,t};
+ if(t)timer=setInterval(()=>{S.t--;const e=$("tm");if(e)e.textContent=fmt(S.t);if(S.t<=0)finish()},1000);
+ show();
+}
+function show(){
+ const q=S.list[S.i];S.ans=false;
+ go(`<div class="bar"><button onclick="home()">Quit</button><b>${S.title}</b><span id="tm">${S.t?fmt(S.t):""}</span></div>
+ <p class="pg">Question ${S.i+1} of ${S.list.length}</p>
+ <div class="card hi q">${q.q}</div>
+ ${q.o.map((x,n)=>`<button class="opt hi" id="o${n}" onclick="pick(${n})">${x}</button>`).join("")}
+ <div id="ex"></div>`);
+}
+function pick(n){
+ if(S.ans)return;S.ans=true;
+ const q=S.list[S.i];
+ if(n==q.a)S.sc++;else S.wrong.push(q);
+ $("o"+q.a).classList.add("ok");
+ if(n!=q.a)$("o"+n).classList.add("no");
+ $("ex").innerHTML=`${q.e?`<div class="card">${q.e}</div>`:""}<button class="pri" onclick="next()">${S.i+1<S.list.length?"Next":"Finish"}</button>`;
+}
+function next(){S.i++;S.i<S.list.length?show():finish()}
+function finish(){
+ clearInterval(timer);
+ const n=S.list.length,p=Math.round(S.sc*100/n);
+ if(p>(+best(S.title)||0))localStorage.setItem("best_"+S.title,p+"%");
+ go(`<h1>Result</h1><div class="big">${S.sc} / ${n}</div><p class="sub" style="text-align:center">${p}% correct</p>
+ ${S.wrong.length?`<p class="sub">Review wrong answers</p>`+S.wrong.map(q=>`<div class="card hi">${q.q}<br><b style="color:#2a9d4a">${q.o[q.a]}</b></div>`).join(""):`<div class="card">All correct!</div>`}
+ <button class="pri" onclick="home()">Home</button>`);
+}
+home();
+</script>
+</body>
+</html>
