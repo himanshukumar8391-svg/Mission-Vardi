@@ -6,11 +6,14 @@ workflows:
     scripts:
       - name: Create Android folder
         script: |
-          flutter create --platforms=android . --project-name mission_vardi --org com.missionvardi
+          flutter create --platforms=android .
       - name: Get packages
         script: |
           flutter pub get
-              - name: Build AAB and APK
-    script: |
-      flutter build appbundle --release
-      flutter build apk --release
+      - name: Build AAB and APK
+        script: |
+          flutter build appbundle --release
+          flutter build apk --release
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/*.apk
