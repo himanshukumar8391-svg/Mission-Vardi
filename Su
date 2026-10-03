@@ -1,0 +1,10 @@
+{
+  subject: "Maths",
+  question: "एक रेलगाड़ी 60 km/h की चाल से...",
+  optionA: "30 सेकंड",
+  optionB: "45 सेकंड",
+  optionC: "60 सेकंड",
+  optionD: "90 सेकंड",
+  correct: "A",
+  explanation: "Distance / Speed..."
+}
