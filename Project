@@ -1,0 +1,11 @@
+mission_vardi/
+├── lib/
+│   ├── main.dart
+│   ├── screens/
+│   │   ├── splash_screen.dart
+│   │   ├── login_screen.dart
+│   │   ├── home_screen.dart
+│   │   ├── quiz_screen.dart
+│   │   └── result_screen.dart
+│   └── services/
+│       └── firebase_service.dart
