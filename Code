@@ -1,0 +1,10 @@
+// login_screen.dart me
+await FirebaseAuth.instance.verifyPhoneNumber(
+  phoneNumber: '+91$mobile',
+  verificationCompleted: (credential) {},
+  verificationFailed: (e) {},
+  codeSent: (verificationId, resendToken) {
+    // OTP screen pe bhejo
+  },
+  codeAutoRetrievalTimeout: (id) {},
+);
